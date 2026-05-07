@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="theme-color" content="#0d0b0f"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="SEORI"/>
+<meta name="description" content="SEORI Korean Ice — Menú Digital"/>
+<title>SEORI — Korean Ice</title>
+<link rel="manifest" href="#"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Sans+KR:wght@300;400;500&family=Bebas+Neue&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0d0b0f;
+    --surface: #13111a;
+    --surface2: #1a1724;
+    --gold: #c9a96e;
+    --gold-light: #e8c98a;
+    --gold-dim: rgba(201,169,110,0.15);
+    --cream: #f5ede0;
+    --text: #ede8df;
+    --text-muted: #9b9188;
+    --accent-pink: #e8a0b4;
+    --accent-teal: #7fc9bf;
+    --border: rgba(201,169,110,0.2);
+    --radius: 16px;
+    --shadow: 0 8px 40px rgba(0,0,0,0.6);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{width:100%;min-height:100vh;background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;overflow-x:hidden}
+
+  /* ── SPLASH ── */
+  #splash{
+    position:fixed;inset:0;z-index:999;background:var(--bg);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+    transition:opacity 0.8s ease, visibility 0.8s ease;
+  }
+  #splash.hide{opacity:0;visibility:hidden;pointer-events:none}
+  .splash-logo{font-family:'Bebas Neue',sans-serif;font-size:72px;letter-spacing:12px;color:var(--gold);line-height:1}
+  .splash-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--text-muted);letter-spacing:4px}
+  .splash-kr{font-size:14px;color:rgba(201,169,110,0.5);letter-spacing:6px;margin-top:4px}
+  .splash-bar{width:60px;height:2px;background:var(--border);margin-top:24px;overflow:hidden;border-radius:2px}
+  .splash-bar::after{content:'';display:block;width:0;height:100%;background:var(--gold);animation:loadbar 1.6s ease forwards}
+  @keyframes loadbar{to{width:100%}}
+  .splash-snowflakes{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+  .sf{position:absolute;top:-20px;font-size:18px;opacity:0;animation:fall linear infinite}
+  @keyframes fall{0%{transform:translateY(-20px) rotate(0deg);opacity:0.7}100%{transform:translateY(110vh) rotate(360deg);opacity:0}}
+
+  /* ── HEADER ── */
+  header{
+    position:sticky;top:0;z-index:100;
+    background:rgba(13,11,15,0.92);backdrop-filter:blur(20px);
+    border-bottom:1px solid var(--border);
+    padding:14px 20px;display:flex;align-items:center;justify-content:space-between;
+  }
+  .logo-wrap{display:flex;flex-direction:column;line-height:1}
+  .logo-text{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:6px;color:var(--gold)}
+  .logo-sub{font-size:10px;letter-spacing:3px;color:var(--text-muted);text-transform:uppercase}
+  .logo-kr{font-size:11px;color:rgba(201,169,110,0.4);letter-spacing:3px}
+  .cart-btn{
+    position:relative;background:var(--gold-dim);border:1px solid var(--border);
+    border-radius:50px;padding:10px 16px;cursor:pointer;display:flex;align-items:center;gap:8px;
+    font-size:14px;color:var(--gold);transition:all 0.3s;
+  }
+  .cart-btn:hover{background:rgba(201,169,110,0.25)}
+  .cart-count{
+    position:absolute;top:-6px;right:-6px;
+    background:var(--gold);color:var(--bg);
+    border-radius:50%;width:20px;height:20px;
+    font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;
+    display:none;
+  }
+
+  /* ── HERO ── */
+  .hero{
+    padding:32px 20px 24px;text-align:center;
+    background:radial-gradient(ellipse at 50% 0%, rgba(201,169,110,0.08) 0%, transparent 70%);
+  }
+  .hero-emoji{font-size:48px;animation:float 3s ease-in-out infinite}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .hero-title{font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:5px;color:var(--text-muted);text-transform:uppercase;margin-top:12px}
+  .hero-notice{
+    margin:16px auto 0;max-width:340px;
+    background:var(--gold-dim);border:1px solid var(--border);
+    border-radius:50px;padding:8px 18px;font-size:12px;color:var(--gold);
+    display:flex;align-items:center;gap:6px;
+  }
+
+  /* ── NAV TABS ── */
+  .nav-tabs{
+    display:flex;gap:8px;padding:16px 20px;overflow-x:auto;
+    scrollbar-width:none;border-bottom:1px solid var(--border);
+  }
+  .nav-tabs::-webkit-scrollbar{display:none}
+  .tab{
+    flex-shrink:0;padding:8px 18px;border-radius:50px;
+    background:var(--surface);border:1px solid var(--border);
+    font-size:13px;color:var(--text-muted);cursor:pointer;transition:all 0.25s;
+    white-space:nowrap;
+  }
+  .tab.active{background:var(--gold);color:var(--bg);font-weight:600;border-color:var(--gold)}
+
+  /* ── SECTIONS ── */
+  .section{display:none;padding:24px 20px;animation:fadeUp 0.4s ease}
+  .section.active{display:block}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  .section-title{
+    font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:4px;color:var(--gold);
+    display:flex;align-items:center;gap:10px;margin-bottom:6px;
+  }
+  .section-kr{font-size:11px;color:var(--text-muted);letter-spacing:3px;margin-bottom:20px}
+
+  /* ── CARDS ── */
+  .cards{display:flex;flex-direction:column;gap:14px}
+  .card{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    overflow:hidden;transition:transform 0.2s, box-shadow 0.2s;
+    position:relative;
+  }
+  .card:active{transform:scale(0.98)}
+  .card-body{padding:16px}
+  .card-name{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--cream);line-height:1.2}
+  .card-kr{font-size:11px;color:var(--gold);letter-spacing:2px;margin-top:2px}
+  .card-desc{font-size:12px;color:var(--text-muted);margin-top:6px;line-height:1.6;font-style:italic}
+  .card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:14px}
+  .price{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold-light);letter-spacing:1px}
+  .add-btn{
+    background:var(--gold);color:var(--bg);border:none;
+    border-radius:50px;padding:8px 18px;font-size:13px;font-weight:700;
+    cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:6px;
+  }
+  .add-btn:hover{background:var(--gold-light);transform:scale(1.05)}
+  .add-btn:active{transform:scale(0.95)}
+  .badge{
+    position:absolute;top:12px;right:12px;
+    background:var(--surface2);border:1px solid var(--border);
+    border-radius:50px;padding:3px 10px;font-size:10px;color:var(--gold);letter-spacing:1px;
+  }
+
+  /* Card variantes */
+  .card.featured{border-color:rgba(201,169,110,0.4);background:linear-gradient(135deg,var(--surface),var(--surface2))}
+  .card-accent-top{height:3px;background:linear-gradient(90deg,var(--gold),var(--accent-pink));width:0;transition:width 0.6s ease;border-radius:2px 2px 0 0}
+  .card:hover .card-accent-top{width:100%}
+
+  /* ── SIZE SELECTOR ── */
+  .size-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .size-btn{
+    padding:6px 14px;border-radius:50px;font-size:12px;
+    border:1px solid var(--border);background:var(--surface2);
+    color:var(--text-muted);cursor:pointer;transition:all 0.2s;
+  }
+  .size-btn.sel{background:var(--gold-dim);color:var(--gold);border-color:var(--gold)}
+
+  /* ── TOPPINGS GRID ── */
+  .toppings-info{
+    background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);
+    padding:16px;margin-top:14px;
+  }
+  .toppings-info h4{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;color:var(--gold);margin-bottom:4px}
+  .toppings-info p{font-size:11px;color:var(--text-muted);margin-bottom:14px}
+  .toppings-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .topping-item{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--surface);border:1px solid var(--border);border-radius:10px;
+    padding:10px 12px;cursor:pointer;transition:all 0.2s;
+    gap:6px;
+  }
+  .topping-item.selected{background:var(--gold-dim);border-color:var(--gold)}
+  .topping-name{font-size:11px;color:var(--text);flex:1}
+  .topping-kr{font-size:9px;color:var(--text-muted);display:block}
+  .topping-price{font-size:11px;color:var(--gold);font-weight:600;white-space:nowrap}
+  .topping-check{width:18px;height:18px;border-radius:50%;border:1px solid var(--border);background:transparent;transition:all 0.2s;flex-shrink:0}
+  .topping-item.selected .topping-check{background:var(--gold);border-color:var(--gold)}
+
+  /* ── CART ── */
+  #cart-panel{
+    position:fixed;inset:0;z-index:200;
+    background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);
+    display:flex;align-items:flex-end;
+    opacity:0;visibility:hidden;transition:all 0.35s ease;
+  }
+  #cart-panel.open{opacity:1;visibility:visible}
+  .cart-sheet{
+    background:var(--surface);width:100%;border-radius:24px 24px 0 0;
+    border-top:1px solid var(--border);max-height:85vh;overflow:hidden;
+    transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    display:flex;flex-direction:column;
+  }
+  #cart-panel.open .cart-sheet{transform:translateY(0)}
+  .cart-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0}
+  .cart-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+  .cart-header h3{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:3px;color:var(--gold)}
+  .close-cart{background:var(--surface2);border:1px solid var(--border);border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:16px;color:var(--text-muted);display:flex;align-items:center;justify-content:center}
+  .cart-items{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+  .cart-item{display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px}
+  .ci-info{flex:1}
+  .ci-name{font-size:14px;color:var(--cream)}
+  .ci-detail{font-size:11px;color:var(--text-muted);margin-top:2px}
+  .ci-price{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold)}
+  .ci-qty{display:flex;align-items:center;gap:8px}
+  .qty-btn{background:var(--border);border:none;border-radius:50%;width:26px;height:26px;color:var(--text);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+  .cart-empty{text-align:center;padding:40px 20px;color:var(--text-muted)}
+  .cart-empty span{font-size:40px;display:block;margin-bottom:12px}
+  .cart-footer{padding:16px 20px;border-top:1px solid var(--border)}
+  .cart-total{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+  .cart-total span:first-child{font-size:13px;color:var(--text-muted)}
+  .cart-total-price{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gold)}
+  .order-btn{
+    width:100%;background:linear-gradient(135deg,#25d366,#128c7e);
+    color:#fff;border:none;border-radius:50px;padding:16px;
+    font-size:16px;font-weight:700;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    transition:all 0.2s;
+  }
+  .order-btn:active{transform:scale(0.97)}
+
+  /* ── ABOUT ── */
+  .about-card{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:24px;text-align:center;
+    background:linear-gradient(135deg,var(--surface),var(--surface2));
+  }
+  .about-logo{font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:8px;color:var(--gold);margin-bottom:8px}
+  .about-tagline{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--text-muted);margin-bottom:20px}
+  .about-divider{width:60px;height:1px;background:var(--border);margin:16px auto}
+  .about-text{font-size:13px;color:var(--text-muted);line-height:1.8}
+  .about-flags{display:flex;justify-content:center;gap:16px;margin-top:16px;font-size:28px}
+
+  /* ── FOOTER ── */
+  footer{
+    text-align:center;padding:24px 20px 32px;
+    border-top:1px solid var(--border);
+    font-size:10px;color:rgba(155,145,136,0.4);letter-spacing:1px;
+  }
+
+  /* Decorative */
+  .deco-line{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+  .deco-line::before,.deco-line::after{content:'';flex:1;height:1px;background:var(--border)}
+  .deco-line span{font-size:10px;color:var(--text-muted);letter-spacing:3px;text-transform:uppercase;white-space:nowrap}
+
+  /* Qty inline on size cards */
+  .qty-control{display:flex;align-items:center;gap:10px;margin-top:10px}
+  .qty-inline-btn{background:var(--surface2);border:1px solid var(--border);border-radius:50%;width:30px;height:30px;color:var(--text);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+  .qty-num{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--cream);min-width:24px;text-align:center}
+
+  /* Toast */
+  #toast{
+    position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--gold);color:var(--bg);
+    border-radius:50px;padding:10px 20px;font-size:13px;font-weight:700;
+    opacity:0;transition:all 0.3s;pointer-events:none;z-index:500;white-space:nowrap;
+  }
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* Scrollbar */
+  ::-webkit-scrollbar{width:4px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-snowflakes" id="snowflakes"></div>
+  <div class="splash-logo">SEORI</div>
+  <div class="splash-sub">Korean Ice</div>
+  <div class="splash-kr">서리</div>
+  <div class="splash-bar"></div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo-wrap">
+    <span class="logo-text">SEORI</span>
+    <span class="logo-sub">Korean Ice</span>
+    <span class="logo-kr">서리</span>
+  </div>
+  <button class="cart-btn" onclick="toggleCart()">
+    🛒 <span id="cart-label">Carrito</span>
+    <span class="cart-count" id="cart-count">0</span>
+  </button>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-emoji">🧊</div>
+  <div class="hero-title">Menú Digital — 메뉴</div>
+  <div class="hero-notice">✨ Pregunte por los sabores de hoy · 오늘의 맛</div>
+</div>
+
+<!-- NAV -->
+<nav class="nav-tabs">
+  <button class="tab active" onclick="showSection('bingsu',this)">🍓 Bingsu 빙수</button>
+  <button class="tab" onclick="showSection('ksoft',this)">🍦 K-Soft 소프트</button>
+  <button class="tab" onclick="showSection('coffee',this)">☕ K-Coffee 커피</button>
+  <button class="tab" onclick="showSection('toppings',this)">✨ Toppings 토핑</button>
+  <button class="tab" onclick="showSection('about',this)">🌸 Nosotros</button>
+</nav>
+
+<!-- BINGSU SECTION -->
+<section class="section active" id="sec-bingsu">
+  <div class="section-title">🍧 BINGSU</div>
+  <div class="section-kr">빙수 — Nieve de leche artesanal</div>
+  <div class="deco-line"><span>specialties</span></div>
+  <div class="cards">
+
+    <div class="card featured">
+      <div class="card-accent-top"></div>
+      <div class="card-body">
+        <span class="badge">🍓 Popular</span>
+        <div class="card-name">Fresa Bingsu</div>
+        <div class="card-kr">딸기 빙수</div>
+        <div class="card-desc">Nieve de leche artesanal con fresas frescas</div>
+        <div class="card-footer">
+          <div class="price">$14.000</div>
+          <button class="add-btn" onclick="addToCart('Fresa Bingsu','딸기 빙수',14000,'🍓')">+ Agregar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card featured">
+      <div class="card-accent-top"></div>
+      <div class="card-body">
+        <div class="card-name">Mango Bingsu</div>
+        <div class="card-kr">망고 빙수</div>
+        <div class="card-desc">Nieve de leche artesanal con mango fresco</div>
+        <div class="card-footer">
+          <div class="price">$14.000</div>
+          <button class="add-btn" onclick="addToCart('Mango Bingsu','망고 빙수',14000,'🥭')">+ Agregar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card featured">
+      <div class="card-accent-top"></div>
+      <div class="card-body">
+        <div class="card-name">Oreo Bingsu</div>
+        <div class="card-kr">오레오 빙수</div>
+        <div class="card-desc">Nieve de leche artesanal con trozos de galleta Oreo y brownie</div>
+        <div class="card-footer">
+          <div class="price">$14.000</div>
+          <button class="add-btn" onclick="addToCart('Oreo Bingsu','오레오 빙수',14000,'🍪')">+ Agregar</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- K-SOFT SECTION -->
+<section class="section" id="sec-ksoft">
+  <div class="section-title">🍦 K-SOFT</div>
+  <div class="section-kr">소프트 — Helado suave coreano</div>
+  <div class="deco-line"><span>cups & cones</span></div>
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-accent-top"></div>
+      <div class="card-body">
+        <span class="badge">Cup 컵</span>
+        <div class="card-name">Seoul Cup</div>
+        <div class="card-kr">서울 컵</div>
+        <div class="card-desc">1 salsa + 2 toppings · 소스 1개 + 토핑 2개</div>
+        <div class="size-row">
+          <div class="size-btn sel" id="sc-8oz" onclick="selectSize('sc','8oz',8000)">8oz · $8.000</div>
+          <div class="size-btn" id="sc-10oz" onclick="selectSize('sc','10oz',10000)">10oz · $10.000</div>
+        </div>
+        <div class="card-footer" style="margin-top:14px">
+          <div class="price" id="sc-price">$8.000</div>
+          <button class="add-btn" onclick="addToCartSize('Seoul Cup','서울 컵','sc','☕')">+ Agregar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-accent-top"></div>
+      <div class="card-body">
+        <span class="badge">Cup 컵</span>
+        <div class="card-name">K-Dream Mix</div>
+        <div class="card-kr">K-드림 믹스 컵</div>
+        <div class="card-desc">1 salsa + 2 toppings · 소스 1개 + 토핑 2개</div>
+        <div class="size-row">
+          <div class="size-btn sel" id="kdm-8oz" onclick="selectSize('kdm','8oz',9000)">8oz · $9.000</div>
+          <div class="size-btn" id="kdm-10oz" onclick="selectSize('kdm','10oz',11000)">10oz · $11.000</div>
+        </div>
+        <div class="card-footer" style="margin-top:14px">
+          <div class="price" id="kdm-price">$9.000</div>
+          <button class="add-btn" onclick="addToCartSize('K-Dream Mix','K-드림 믹스',kdm','🍦')">+ Agregar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-accent-top"></div>
+      <div class="card-body">
+        <span class="badge">Cone 콘</span>
+        <div class="card-name">K-Soft Cone</div>
+        <div class="card-kr">K-소프트 콘</div>
+        <div class="card-footer">
+          <div class="price">$5.000</div>
+          <button class="add-btn" onclick="addToCart('K-Soft Cone','K-소프트 콘',5000,'🍦')">+ Agregar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-accent-top"></div>
+      <div class="card-body">
+        <span class="badge">Cone 콘</span>
+        <div class="card-name">K-Dream Mix Cone</div>
+        <div class="card-kr">케이드림믹스 콘</div>
+        <div class="card-footer">
+          <div class="price">$6.000</div>
+          <button class="add-btn" onclick="addToCart('K-Dream Mix Cone','케이드림믹스',6000,'🍦')">+ Agregar</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- K-COFFEE SECTION -->
+<section class="section" id="sec-coffee">
+  <div class="section-title">☕ K-COFFEE</div>
+  <div class="section-kr">K-커피 · 에스프레소</div>
+  <div class="deco-line"><span>café & espresso</span></div>
+  <div class="cards">
+
+    <div class="card featured">
+      <div class="card-accent-top"></div>
+      <div class="card-body">
+        <span class="badge">☁️ Signature</span>
+        <div class="card-name">Dalgona Coffee</div>
+        <div class="card-kr">달고나 커피</div>
+        <div class="card-desc">Leche con espuma de café batido</div>
+        <div class="card-footer">
+          <div class="price">$9.000</div>
+          <button class="add-btn" onclick="addToCart('Dalgona Coffee','달고나 커피',9000,'☁️')">+ Agregar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card featured">
+      <div class="card-accent-top"></div>
+      <div class="card-body">
+        <div class="card-name">Affogato</div>
+        <div class="card-kr">아포가토</div>
+        <div class="card-desc">Helado de vainilla bañado en espreso caliente</div>
+        <div class="card-footer">
+          <div class="price">$12.000</div>
+          <button class="add-btn" onclick="addToCart('Affogato','아포가토',12000,'🍨')">+ Agregar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-accent-top"></div>
+      <div class="card-body">
+        <div class="card-name">Expreso</div>
+        <div class="card-kr">에스프레소</div>
+        <div class="card-desc">Extracción pura de café de especialidad recién molido</div>
+        <div class="card-footer">
+          <div class="price">$4.000</div>
+          <button class="add-btn" onclick="addToCart('Expreso','에스프레소',4000,'☕')">+ Agregar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="card-name">Agua 300ml</div>
+        <div class="card-kr">물</div>
+        <div class="card-footer">
+          <div class="price">$1.500</div>
+          <button class="add-btn" onclick="addToCart('Agua 300ml','물',1500,'💧')">+ Agregar</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- TOPPINGS SECTION -->
+<section class="section" id="sec-toppings">
+  <div class="section-title">✨ TOPPINGS</div>
+  <div class="section-kr">토핑 — $2.000 c/u</div>
+  <div class="deco-line"><span>personaliza tu pedido</span></div>
+
+  <div class="toppings-info">
+    <h4>ELIGE TUS TOPPINGS</h4>
+    <p>Toca los que deseas y agrégalos al carrito · 토핑을 선택하세요</p>
+    <div class="toppings-grid" id="toppings-grid"></div>
+    <div style="margin-top:14px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:12px;color:var(--text-muted)"><span id="selected-count">0</span> seleccionados</span>
+      <button class="add-btn" onclick="addToppingsToCart()">+ Agregar selección</button>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT SECTION -->
+<section class="section" id="sec-about">
+  <div class="about-card">
+    <div class="about-logo">SEORI</div>
+    <div class="about-tagline">Korean Ice — 서리</div>
+    <div class="about-divider"></div>
+    <div class="about-text">
+      Bingsu artesanal y helados suaves al estilo coreano.<br/>
+      Una experiencia única de sabores K-pop para tu paladar.
+    </div>
+    <div class="about-flags">🇰🇷 🍧 🇨🇴</div>
+    <div class="about-divider"></div>
+    <div style="font-size:12px;color:var(--text-muted);line-height:2">
+      ✨ Bingsu · K-Soft · K-Coffee<br/>
+      🕐 Consulta nuestro horario<br/>
+      📍 Pregunta por nuestra ubicación<br/>
+      <br/>
+      <span style="color:var(--gold)">오늘의 맛을 물어보세요</span><br/>
+      <span style="font-size:11px;font-style:italic">Pregunte por los sabores de hoy</span>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  Desarrollada por Vibras Positivas HM — Derechos de Autor Reservados
+</footer>
+
+<!-- CART PANEL -->
+<div id="cart-panel" onclick="closeCartOutside(event)">
+  <div class="cart-sheet">
+    <div class="cart-handle"></div>
+    <div class="cart-header">
+      <h3>🛒 Tu Pedido</h3>
+      <button class="close-cart" onclick="toggleCart()">✕</button>
+    </div>
+    <div class="cart-items" id="cart-items">
+      <div class="cart-empty"><span>🧊</span>Tu carrito está vacío</div>
+    </div>
+    <div class="cart-footer">
+      <div class="cart-total">
+        <span>Total del pedido</span>
+        <span class="cart-total-price" id="cart-total">$0</span>
+      </div>
+      <button class="order-btn" onclick="sendWhatsApp()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.549 4.107 1.516 5.836L.057 23.75a.5.5 0 00.693.572l5.979-2.097A11.937 11.937 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.878 0-3.64-.502-5.163-1.38l-.36-.214-3.748 1.314 1.267-3.645-.234-.374A9.95 9.95 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+        Pedir por WhatsApp
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ── DATA ──
+const TOPPINGS_DATA = [
+  {name:'Grageas (Sprinkles)',kr:'스프링클'},
+  {name:'Chip Choc. Oscuro',kr:'다크 초코칩'},
+  {name:'Cereza',kr:'체리'},
+  {name:'Gomitas',kr:'젤리'},
+  {name:'Maní en Trocitos',kr:'분태 땅콩'},
+  {name:'Lluvia de Chocolate',kr:'초코 레인'},
+  {name:'M&M',kr:'엠앤엠즈'},
+  {name:'Galleta Oreo',kr:'오레오 분태'},
+  {name:'Hojuelas Zucaritas',kr:'콘푸로스트'},
+  {name:'Almendras',kr:'아몬드 슬라이스'},
+  {name:'Explosión de Sabores',kr:'맛의 폭발'},
+  {name:'Choco Chips Colores',kr:'레인보우 초코칩'},
+  {name:'Choco Krispis',kr:'초코 크리스피'},
+];
+
+// ── STATE ──
+let cart = [];
+let sizeState = {sc:{size:'8oz',price:8000}, kdm:{size:'8oz',price:9000}};
+let selectedToppings = new Set();
+
+// ── SPLASH ──
+window.addEventListener('load', () => {
+  createSnowflakes();
+  setTimeout(() => document.getElementById('splash').classList.add('hide'), 2000);
+});
+
+function createSnowflakes(){
+  const c = document.getElementById('snowflakes');
+  const emojis = ['❄️','🌸','✨','⭐','💫'];
+  for(let i=0;i<12;i++){
+    const s = document.createElement('div');
+    s.className='sf';
+    s.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    s.style.left=Math.random()*100+'%';
+    s.style.animationDuration=(3+Math.random()*4)+'s';
+    s.style.animationDelay=(Math.random()*3)+'s';
+    c.appendChild(s);
+  }
+}
+
+// ── TABS ──
+function showSection(id, el){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  el.classList.add('active');
+}
+
+// ── SIZE SELECTOR ──
+function selectSize(product, size, price){
+  sizeState[product]={size,price};
+  document.querySelectorAll(`[id^="${product}-"]`).forEach(b=>b.classList.remove('sel'));
+  document.getElementById(`${product}-${size}`).classList.add('sel');
+  document.getElementById(`${product}-price`).textContent='$'+price.toLocaleString('es-CO');
+}
+
+// ── TOPPINGS UI ──
+(function buildToppings(){
+  const grid = document.getElementById('toppings-grid');
+  TOPPINGS_DATA.forEach((t,i)=>{
+    const div=document.createElement('div');
+    div.className='topping-item';
+    div.id='tp-'+i;
+    div.innerHTML=`
+      <div>
+        <span class="topping-name">${t.name}</span>
+        <span class="topping-kr">${t.kr}</span>
+      </div>
+      <span class="topping-price">$2.000</span>
+      <div class="topping-check"></div>
+    `;
+    div.onclick=()=>toggleTopping(i,t.name);
+    grid.appendChild(div);
+  });
+})();
+
+function toggleTopping(i, name){
+  const el=document.getElementById('tp-'+i);
+  if(selectedToppings.has(i)){selectedToppings.delete(i);el.classList.remove('selected')}
+  else{selectedToppings.add(i);el.classList.add('selected')}
+  document.getElementById('selected-count').textContent=selectedToppings.size;
+}
+
+function addToppingsToCart(){
+  if(selectedToppings.size===0){showToast('⚠️ Selecciona al menos un topping');return}
+  selectedToppings.forEach(i=>{
+    const t=TOPPINGS_DATA[i];
+    addToCart(t.name,t.kr,2000,'✨');
+  });
+  selectedToppings.forEach(i=>{
+    document.getElementById('tp-'+i).classList.remove('selected');
+  });
+  selectedToppings.clear();
+  document.getElementById('selected-count').textContent=0;
+}
+
+// ── CART ──
+function addToCart(name, kr, price, emoji){
+  const existing=cart.find(i=>i.name===name&&!i.size);
+  if(existing){existing.qty++}
+  else{cart.push({name,kr,price,emoji,qty:1,size:null})}
+  updateCartUI();
+  showToast(`✅ ${emoji} ${name} agregado`);
+}
+
+function addToCartSize(name, kr, product, emoji){
+  const {size,price}=sizeState[product];
+  const key=`${name}-${size}`;
+  const existing=cart.find(i=>i.key===key);
+  if(existing){existing.qty++}
+  else{cart.push({key,name:`${name} (${size})`,kr,price,emoji,qty:1,size})}
+  updateCartUI();
+  showToast(`✅ ${emoji} ${name} ${size} agregado`);
+}
+
+function updateCartUI(){
+  const total=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const count=cart.reduce((s,i)=>s+i.qty,0);
+  const countEl=document.getElementById('cart-count');
+  countEl.textContent=count;
+  countEl.style.display=count>0?'flex':'none';
+  document.getElementById('cart-label').textContent=count>0?`(${count})`:'Carrito';
+  document.getElementById('cart-total').textContent='$'+total.toLocaleString('es-CO');
+  renderCartItems();
+}
+
+function renderCartItems(){
+  const el=document.getElementById('cart-items');
+  if(cart.length===0){el.innerHTML='<div class="cart-empty"><span>🧊</span>Tu carrito está vacío</div>';return}
+  el.innerHTML=cart.map((item,i)=>`
+    <div class="cart-item">
+      <span style="font-size:24px">${item.emoji}</span>
+      <div class="ci-info">
+        <div class="ci-name">${item.name}</div>
+        <div class="ci-detail">${item.kr}</div>
+      </div>
+      <div class="ci-qty">
+        <button class="qty-btn" onclick="changeQty(${i},-1)">−</button>
+        <span>${item.qty}</span>
+        <button class="qty-btn" onclick="changeQty(${i},1)">+</button>
+      </div>
+      <div class="ci-price">$${(item.price*item.qty).toLocaleString('es-CO')}</div>
+    </div>
+  `).join('');
+}
+
+function changeQty(i, delta){
+  cart[i].qty+=delta;
+  if(cart[i].qty<=0)cart.splice(i,1);
+  updateCartUI();
+}
+
+function toggleCart(){
+  document.getElementById('cart-panel').classList.toggle('open');
+}
+function closeCartOutside(e){
+  if(e.target.id==='cart-panel')toggleCart();
+}
+
+// ── WHATSAPP ──
+function sendWhatsApp(){
+  if(cart.length===0){showToast('⚠️ Tu carrito está vacío');return}
+  const total=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  let msg='🧊 *PEDIDO SEORI — Korean Ice*\n서리\n\n';
+  cart.forEach(i=>{
+    msg+=`• ${i.emoji} ${i.name} x${i.qty} — $${(i.price*i.qty).toLocaleString('es-CO')}\n`;
+  });
+  msg+=`\n💰 *Total: $${total.toLocaleString('es-CO')}*\n\n오늘의 맛을 물어보세요 ✨`;
+  const url='https://wa.me/?text='+encodeURIComponent(msg);
+  window.open(url,'_blank');
+}
+
+// ── TOAST ──
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+// ── FIX syntax error in inline onclick ──
+// Patch: addToCartSize for kdm
+document.querySelectorAll('.add-btn').forEach(btn=>{
+  const oc=btn.getAttribute('onclick');
+  if(oc&&oc.includes("kdm','")){
+    btn.setAttribute('onclick',oc.replace("kdm','","'kdm','"));
+  }
+});
+</script>
+
+<!-- PWA MANIFEST (inline) -->
+<script>
+const manifest={
+  name:'SEORI Korean Ice',
+  short_name:'SEORI',
+  description:'Menú Digital SEORI — 서리 Korean Ice',
+  start_url:'.',
+  display:'standalone',
+  background_color:'#0d0b0f',
+  theme_color:'#0d0b0f',
+  icons:[{src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%230d0b0f"/><text y=".9em" font-size="80" x="10">🧊</text></svg>',sizes:'any',type:'image/svg+xml'}]
+};
+const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
+const mUrl=URL.createObjectURL(blob);
+document.querySelector('link[rel="manifest"]').href=mUrl;
+</script>
+
+<!-- SERVICE WORKER -->
+<script>
+if('serviceWorker' in navigator){
+  const swCode=`
+    self.addEventListener('install',e=>self.skipWaiting());
+    self.addEventListener('activate',e=>clients.claim());
+    self.addEventListener('fetch',e=>{
+      if(e.request.url.includes('fonts.googleapis.com')||e.request.url.includes('fonts.gstatic.com')){
+        e.respondWith(caches.open('seori-fonts').then(c=>c.match(e.request).then(r=>r||fetch(e.request).then(res=>{c.put(e.request,res.clone());return res;}))));
+      }
+    });
+  `;
+  const swBlob=new Blob([swCode],{type:'application/javascript'});
+  const swUrl=URL.createObjectURL(swBlob);
+  navigator.serviceWorker.register(swUrl).catch(()=>{});
+}
+</script>
+
+</body>
+</html>
